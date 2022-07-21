@@ -13,6 +13,7 @@ async def help(message: types.Message) -> None:
     reply += "/about или /help - Выведет это сообщение\n"
     reply += "/ping - Выведет сообщение о текущей системе\n"
     reply += "/topNwords - Выведет топ N слов в чате (Информация с GRStats)"
+    reply += "/random_anime - Выдаёт случайное аниме с ShikiMori"
 
     await message.answer(reply)
 
