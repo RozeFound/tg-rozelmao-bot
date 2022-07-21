@@ -2,6 +2,7 @@ import psutil, re, config
 from aiogram import types
 from dispatcher import dp
 from stats import Stats
+from aiohttp import request
 
 @dp.message_handler(commands=("start", "about", "help"))
 async def help(message: types.Message) -> None:
@@ -39,3 +40,18 @@ async def get_topNwords(message: types.Message) -> None:
             if words_count >= words_amount: break
 
         await message.answer(reply, parse_mode="markdown")
+
+@dp.message_handler(commands="random_anime")
+async def random_anime(message: types.Message) -> None:
+
+    payload = {
+        "order": "random", "kind": "tv",
+        "status": "released", "score": 1,
+        "rating": ("g", "pg", "pg_13", "r", "r_plus"),
+        "censored": "true"
+    } 
+
+    headers = {"User-Agent": "TG-RozeLMAO-BOT"}
+
+    async with request('GET', "https://shikimori.one/api/animes", params=payload, headers=headers) as response:
+        await message.answer(f"https://shikimori.one{(await response.json())[0]['url']}")
