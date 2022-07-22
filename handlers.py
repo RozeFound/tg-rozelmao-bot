@@ -13,7 +13,8 @@ async def help(message: types.Message) -> None:
     reply += "/about или /help - Выведет это сообщение\n"
     reply += "/ping - Выведет сообщение о текущей системе\n"
     reply += "/topNwords - Выведет топ N слов в чате (Информация с GRStats)\n"
-    reply += "/random_anime - Выдаёт случайное аниме с ShikiMori"
+    reply += "/random_anime - Выдаёт случайное аниме с ShikiMori\n\n"
+    reply += "GitHub link - https://github.com/RozeFound/tg-rozelmao-bot"
 
     await message.answer(reply)
 
