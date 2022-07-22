@@ -16,7 +16,7 @@ async def help(message: types.Message) -> None:
     reply += "/random_anime - Выдаёт случайное аниме с ShikiMori\n\n"
     reply += "GitHub link - https://github.com/RozeFound/tg-rozelmao-bot"
 
-    await message.answer(reply)
+    await message.answer(reply, disable_web_page_preview=True)
 
 @dp.message_handler(commands="ping")
 async def ping(message: types.Message) -> None:
