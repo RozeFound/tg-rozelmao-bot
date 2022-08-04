@@ -33,9 +33,14 @@ async def get_topNwords(message: types.Message) -> None:
     if match := re.search(r"\/top(\d+)words", message.text):
 
         words_count, words_amount = 0, int(match.group(1))
+
+        if words_amount <= 0 or words_amount > 100:
+            await message.reply("Слышь инвалид, используй пжалста цифру от 1 до 100.")
+            return
+
         top_words = Stats.get_top_words(config.GROUP_ID)
 
-        reply = f"Топ {words_amount} слов в этом канале:\n\n"
+        reply = f"Топ слов в этом канале:\n\n"
         async for word, usage_count in top_words:
             words_count += 1
             reply += f"*{words_count}.* *{word}* - *{usage_count}* раз\n" 
@@ -48,7 +53,7 @@ async def random_anime(message: types.Message) -> None:
 
     payload = {
         "order": "random", "kind": "tv",
-        "status": "released", "score": 1,
+        "status": "released", "score": 8,
         "rating": ("g", "pg", "pg_13", "r", "r_plus"),
         "censored": "true"
     } 
