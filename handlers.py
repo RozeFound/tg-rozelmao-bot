@@ -53,7 +53,7 @@ async def random_anime(message: types.Message) -> None:
 
     payload = {
         "order": "random", "kind": "tv",
-        "status": "released", "score": 8,
+        "status": "released", "score": 7,
         "rating": ("g", "pg", "pg_13", "r", "r_plus"),
         "censored": "true"
     } 
