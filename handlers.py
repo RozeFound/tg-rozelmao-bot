@@ -13,7 +13,8 @@ async def help(message: types.Message) -> None:
     reply += "/about или /help - Выведет это сообщение\n"
     reply += "/ping - Выведет сообщение о текущей системе\n"
     reply += "/topNwords - Выведет топ N слов в чате (Информация с GRStats)\n"
-    reply += "/random_anime - Выдаёт случайное аниме с ShikiMori\n\n"
+    reply += "/random_anime - Выдаёт случайное аниме с ShikiMori\n"
+    reply += "/ztmembers - Выводит информацию об участниках сети ZeroTier\n\n"
     reply += "GitHub link - https://github.com/RozeFound/tg-rozelmao-bot"
 
     await message.answer(reply, disable_web_page_preview=True)
@@ -62,3 +63,24 @@ async def random_anime(message: types.Message) -> None:
 
     async with request('GET', "https://shikimori.one/api/animes", params=payload, headers=headers) as response:
         await message.answer(f"https://shikimori.one{(await response.json())[0]['url']}")
+
+@dp.message_handler(commands="ztmembers")
+async def zt_get_members(message: types.Message) -> None:
+
+    headers = {"Authorization": f"token {config.ZT_TOKEN}"}
+    url = f"https://api.zerotier.com/api/v1/network/{config.ZT_NETWORK_ID}/member"
+    async with request("GET", url, headers=headers) as response:
+
+        reply = f"Список участников в сети ZT {config.ZT_NETWORK_ID}:\n\n"
+
+        for member in await response.json():
+
+            if member['hidden']: continue
+
+            name = member['name']
+            ips = member['config']['ipAssignments']
+            online = member['online']
+
+            reply += f"\[*{'Online' if online else 'Offline'}*] {name} - *{', '.join(ips)}*\n"
+
+    await message.answer(reply, parse_mode="markdown")
