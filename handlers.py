@@ -65,7 +65,7 @@ async def random_anime(message: types.Message) -> None:
         await message.answer(f"https://shikimori.one{(await response.json())[0]['url']}")
 
 @dp.message_handler(commands="ztmembers")
-async def zt_get_members(message: types.Message) -> None:
+async def zt_members(message: types.Message) -> None:
 
     headers = {"Authorization": f"token {config.ZT_TOKEN}"}
     url = f"https://api.zerotier.com/api/v1/network/{config.ZT_NETWORK_ID}/member"
