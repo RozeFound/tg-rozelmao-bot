@@ -14,6 +14,8 @@ async def help(message: types.Message) -> None:
     reply += "/ping - Выведет сообщение о текущей системе\n"
     reply += "/topNwords - Выведет топ N слов в чате (Информация с GRStats)\n"
     reply += "/random_anime - Выдаёт случайное аниме с ShikiMori\n"
+    reply += "/ztauth {ID} - Автроизует ID в сети ZeroTier\n"
+    reply += "/ztname {ID} {NAME} - Устанавливает имя {ID} в сети ZeroTier\n"
     reply += "/ztmembers - Выводит информацию об участниках сети ZeroTier\n\n"
     reply += "GitHub link - https://github.com/RozeFound/tg-rozelmao-bot"
 
@@ -82,5 +84,44 @@ async def zt_members(message: types.Message) -> None:
             online = member['online']
 
             reply += f"\[*{'Online' if online else 'Offline'}*] {name} - *{', '.join(ips)}*\n"
+
+    await message.answer(reply, parse_mode="markdown")
+
+@dp.message_handler(commands="ztauth")
+async def zt_auth(message: types.Message) -> None:
+
+    if not (member_id := message.get_args()): 
+        return await message.answer(f"Укажите ID пользователя.")
+
+    headers = {"Authorization": f"token {config.ZT_TOKEN}"}
+    url = f"https://api.zerotier.com/api/v1/network/{config.ZT_NETWORK_ID}/member/{member_id}"
+    async with request("GET", url, headers=headers) as response:
+        if response.status == 404: reply = f"Пользователь с ID *{member_id}* не найден."
+        else:
+            async with request("POST", url, headers=headers, json={"config":{"authorized":True}}) as response:
+                if response.status == 200: reply = f"ID *{member_id}* успешно авторизован"
+                else: reply = f"Произошла неизвестная ошибка во время авторизации."
+
+    await message.answer(reply, parse_mode="markdown")
+
+@dp.message_handler(commands="ztname")
+async def zt_name(message: types.Message) -> None:
+
+    args = message.get_args().split()
+
+    if not (member_id := args[0]): 
+        return await message.answer(f"Укажите ID пользователя.")
+
+    if not (name := " ".join(args[1:])): 
+        return await message.answer(f"Укажите желаемое имя.")
+
+    headers = {"Authorization": f"token {config.ZT_TOKEN}"}
+    url = f"https://api.zerotier.com/api/v1/network/{config.ZT_NETWORK_ID}/member/{member_id}"
+    async with request("GET", url, headers=headers) as response:
+        if response.status == 404: reply = f"Пользователь с ID *{member_id}* не найден."
+        else:
+            async with request("POST", url, headers=headers, json={"name":name}) as response:
+                if response.status == 200: reply = f"*{member_id}* успешно переименован в *{name}*"
+                else: reply = f"Произошла неизвестная ошибка."
 
     await message.answer(reply, parse_mode="markdown")
