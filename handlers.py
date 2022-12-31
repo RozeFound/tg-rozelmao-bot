@@ -109,6 +109,9 @@ async def zt_name(message: types.Message) -> None:
 
     args = message.get_args().split()
 
+    if not args: 
+        return await message.reply("usage: /ztname {id} {name}")
+
     if not (member_id := args[0]): 
         return await message.answer(f"Укажите ID пользователя.")
 
