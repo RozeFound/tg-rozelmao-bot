@@ -3,6 +3,8 @@ from aiogram import types
 from dispatcher import dp
 from stats import Stats
 from aiohttp import request
+from datetime import datetime
+
 
 @dp.message_handler(commands=("start", "about", "help"))
 async def help(message: types.Message) -> None:
@@ -66,6 +68,22 @@ async def random_anime(message: types.Message) -> None:
     async with request('GET', "https://shikimori.one/api/animes", params=payload, headers=headers) as response:
         await message.answer(f"https://shikimori.one{(await response.json())[0]['url']}")
 
+def clamp_delta(duration) -> str:
+
+    days, seconds = duration.days, duration.seconds
+    hours = days * 24 + seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = (seconds % 60)
+    weeks = days // 7
+
+    if weeks: time = f"{weeks}w"
+    elif days: time = f"{days}d"
+    elif hours: time = f"{hours}h"
+    elif minutes: time = f"{minutes}m"
+    elif seconds: time = f"{seconds}s"
+
+    return time
+
 @dp.message_handler(commands="ztmembers")
 async def zt_members(message: types.Message) -> None:
 
@@ -79,11 +97,13 @@ async def zt_members(message: types.Message) -> None:
 
             if member['hidden']: continue
 
-            name = member['name']
+            name = member.get("name", "Unknown")
             ips = member['config']['ipAssignments']
-            online = member['online']
+            last_seen = member.get("lastSeen", 0)
 
-            reply += f"\[*{'Online' if online else 'Offline'}*] {name} - *{', '.join(ips)}*\n"
+            delta = datetime.now() - datetime.fromtimestamp(last_seen/1000.0)
+
+            reply += f"\[*{clamp_delta(delta)}*] {name} - *{', '.join(ips)}*\n"
 
     await message.answer(reply, parse_mode="markdown")
 
