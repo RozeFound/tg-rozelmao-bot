@@ -65,8 +65,8 @@ async def random_anime(message: types.Message) -> None:
 
     headers = {"User-Agent": "TG-RozeLMAO-BOT"}
 
-    async with request('GET', "https://shikimori.me/api/animes", params=payload, headers=headers) as response:
-        await message.answer(f"https://shikimori.me{(await response.json())[0]['url']}")
+    async with request('GET', "https://shikimori.one/api/animes", params=payload, headers=headers) as response:
+        await message.answer(f"https://shikimori.one{(await response.json())[0]['url']}")
 
 def clamp_delta(duration) -> str:
 
